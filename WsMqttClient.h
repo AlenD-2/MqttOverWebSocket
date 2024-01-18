@@ -24,6 +24,8 @@ public:
 
     void setAddress(const QString& address);
     void setPort(int port);
+    void setUsername(const QString& userName);
+    void setPassword(const QString& password);
     void connectTo(const QUrl& url);
     void addTopic(const QString topic);
     void setConnectionMode(Mode mode);

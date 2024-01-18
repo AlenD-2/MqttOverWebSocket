@@ -16,6 +16,16 @@ void WsMqttClient::setPort(int port)
     m_port = port;
 }
 
+void WsMqttClient::setUsername(const QString &userName)
+{
+    m_client.setUsername(userName);
+}
+
+void WsMqttClient::setPassword(const QString &password)
+{
+    m_client.setPassword(password);
+}
+
 void WsMqttClient::connect()
 {
     switch (m_mode) {
