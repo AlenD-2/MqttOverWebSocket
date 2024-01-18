@@ -10,6 +10,7 @@ WebSocketIODevice::WebSocketIODevice(QObject *parent)
     connect(&m_socket, &QWebSocket::binaryMessageReceived, this, &WebSocketIODevice::handleBinaryMessage);
     connect(&m_socket, &QWebSocket::errorOccurred, this, [this]{
         qDebug()<<"WebSocket Error: "<<m_socket.errorString();
+        emit errorOccurred();
     });
 }
 

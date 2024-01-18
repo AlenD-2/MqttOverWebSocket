@@ -4,6 +4,10 @@ WsMqttClient::WsMqttClient(QObject *parent) : QObject(parent)
 {
     QObject::connect(&m_device, &WebSocketIODevice::socketConnected, this, &WsMqttClient::onSocketConnected);
     QObject::connect(&m_client, &QMqttClient::connected, this, &WsMqttClient::onClientConnected);
+    QObject::connect(&m_client, &QMqttClient::disconnected, this, &WsMqttClient::onClientDisconnected);
+    QObject::connect(&m_device, &WebSocketIODevice::errorOccurred, this, [this]{
+        emit this->stateChanged(State::Disconnected);
+    });
 }
 
 void WsMqttClient::setAddress(const QString &address)
@@ -28,6 +32,8 @@ void WsMqttClient::setPassword(const QString &password)
 
 void WsMqttClient::connect()
 {
+    emit stateChanged(State::Connecting);
+
     switch (m_mode) {
     case Mode::TCP:
         m_url = "mqtt://"+m_address+":"+QString::number(m_port);
@@ -44,6 +50,7 @@ void WsMqttClient::connect()
     default:
         lastErrorText = "unknown connection mode";
         emit errorOccured();
+        emit stateChanged(State::Disconnected);
         break;
     }
     m_device.setUrl(m_url);
@@ -51,18 +58,21 @@ void WsMqttClient::connect()
     if (!m_device.open(QIODevice::ReadWrite))
     {
         lastErrorText = "Could not open socket device";
+        emit stateChanged(State::Disconnected);
         emit errorOccured();
     }
 }
 
 void WsMqttClient::connectTo(const QUrl &url)
 {
+    emit stateChanged(State::Connecting);
     m_device.setUrl(url);
     m_device.setProtocol(m_version == 3 ? "mqttv3.1" : "mqtt");
     if (!m_device.open(QIODevice::ReadWrite))
     {
         lastErrorText = "Could not open socket device";
         emit errorOccured();
+        emit stateChanged(State::Disconnected);
     }
 }
 
@@ -109,7 +119,7 @@ void WsMqttClient::onSocketConnected()
 
 void WsMqttClient::onClientConnected()
 {
-    for(auto topic : m_topicsQueue)
+    for(const auto& topic : m_topicsQueue)
     {
         auto subscription = m_client.subscribe(topic);
         if (!subscription) {
@@ -119,4 +129,11 @@ void WsMqttClient::onClientConnected()
 
         QObject::connect(subscription, &QMqttSubscription::messageReceived, this, &WsMqttClient::onMessageRecived);
     }
+    emit stateChanged(State::Connected);
+    m_topicsQueue.clear();
+}
+
+void WsMqttClient::onClientDisconnected()
+{
+    emit stateChanged(State::Disconnected);
 }

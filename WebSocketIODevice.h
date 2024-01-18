@@ -21,8 +21,10 @@ public:
 
     void setUrl(const QUrl &url);
     void setProtocol(const QByteArray &data);
-Q_SIGNALS:
+
+signals:
     void socketConnected();
+    void errorOccurred();
 
 public slots:
     void handleBinaryMessage(const QByteArray &msg);
