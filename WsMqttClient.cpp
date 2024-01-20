@@ -94,6 +94,11 @@ void WsMqttClient::addTopic(const QString topic)
     }
 }
 
+void WsMqttClient::publish(const QMqttTopicName &topic, const QByteArray &message, quint8 qos, bool retain)
+{
+    m_client.publish(topic, message, qos, retain);
+}
+
 void WsMqttClient::setConnectionMode(Mode mode)
 {
     m_mode = mode;

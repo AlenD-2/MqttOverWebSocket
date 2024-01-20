@@ -38,6 +38,7 @@ public:
 
     void connectTo(const QUrl& url);
     void addTopic(const QString topic);
+    void publish(const QMqttTopicName& topic, const QByteArray& message, quint8 qos=0, bool retain=false);
 
 signals:
     void errorOccured();
