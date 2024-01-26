@@ -22,6 +22,8 @@ public:
     void setUrl(const QUrl &url);
     void setProtocol(const QByteArray &data);
 
+    void ping();
+
 signals:
     void socketConnected();
     void errorOccurred();

@@ -99,6 +99,11 @@ void WsMqttClient::publish(const QMqttTopicName &topic, const QByteArray &messag
     m_client.publish(topic, message, qos, retain);
 }
 
+void WsMqttClient::testConnectionAlive()
+{
+    m_device.ping();
+}
+
 void WsMqttClient::setConnectionMode(Mode mode)
 {
     m_mode = mode;

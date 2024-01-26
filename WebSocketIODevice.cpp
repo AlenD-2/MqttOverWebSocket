@@ -65,6 +65,11 @@ void WebSocketIODevice::setProtocol(const QByteArray &data)
     m_protocol = data;
 }
 
+void WebSocketIODevice::ping()
+{
+    m_socket.ping();
+}
+
 void WebSocketIODevice::handleBinaryMessage(const QByteArray &msg)
 {
     m_buffer.append(msg);
